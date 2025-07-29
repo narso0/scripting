@@ -1,38 +1,52 @@
-import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { CartProvider } from './context/CartContext.jsx';
-import Navbar from './components/Navbar';
-import ProductListing from './components/ProductListing';
-import ProductDetail from './components/ProductDetail';
-import CartOverlay from './components/CartOverlay';
-import CartPage from './components/CartPage';
-import ShippingInfo from './components/ShippingInfo';
-import ShippingMethod from './components/ShippingMethod';
-import Payment from './components/Payment';
-import Confirmation from './components/Confirmation';
+import "./App.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Root from "./routes/root";
+import ErrorPage from "./error-page";
+import Home from "./routes/home";
+import Post from "./routes/post";
+import NewPost from "./routes/new-post";
+import { useState } from "react";
 
 function App() {
-  return (
-    <CartProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-100">
-          <Navbar />
-          <CartOverlay />
-          <Routes>
-            <Route path="/" element={<ProductListing category="Women" />} />
-            <Route path="/men" element={<ProductListing category="Men" />} />
-            <Route path="/kids" element={<ProductListing category="Kids" />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/shipping" element={<ShippingInfo />} />
-            <Route path="/shipping-method" element={<ShippingMethod />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/confirmation" element={<Confirmation />} />
-          </Routes>
-        </div>
-      </Router>
-    </CartProvider>
-  );
+  const [posts, setPosts] = useState([
+    {
+      id: "1",
+      title: "Getting Started with React",
+      content:
+        "React is a very good framework for building user interfaces. It's easy to learn and has a large community support. React is a very good framework for building user interfaces.",
+    },
+    {
+      id: "2",
+      title: "Getting Started with React",
+      content:
+        "React is a very good framework for building user interfaces. It's easy to learn and has a large community support.",
+    },
+    {
+      id: "3",
+      title: "Getting Started with React",
+      content:
+        "React is a very good framework for building user interfaces. It's easy to learn and has a large community support.",
+    },
+  ]);
+
+  const handleAddPost = (post) => {
+    setPosts([...posts, post]);
+  };
+
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Root />,
+      errorElement: <ErrorPage />,
+      children: [
+        { path: "/", element: <Home posts={posts} /> },
+        { path: "posts/:postId", element: <Post posts={posts} /> },
+        { path: "new-post", element: <NewPost onAddPost={handleAddPost} /> },
+      ],
+    },
+  ]);
+
+  return <RouterProvider router={router} />;
 }
 
 export default App;
